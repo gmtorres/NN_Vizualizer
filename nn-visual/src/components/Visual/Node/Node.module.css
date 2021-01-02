@@ -1,0 +1,14 @@
+
+
+
+.node_data{
+    visibility: hidden;
+    opacity: 0;
+
+    transition: opacity .3s, visibility .3s;
+}
+
+.node:hover .node_data{
+    visibility: visible;
+    opacity: 1;
+}
