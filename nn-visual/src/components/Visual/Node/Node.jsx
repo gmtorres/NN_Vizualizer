@@ -15,8 +15,8 @@ class Node extends React.Component{
          
         return (
             <g /*className={styles.node}*/>
-                <circle cx={this.x} cy={this.y} r={this.r} stroke="black" stroke-width="2" fill="white" />
-                <text /*className={styles.node_data}*/ x={this.x} y={this.y} text-anchor="middle" font-size="smaller">Hey!</text>
+                <circle cx={this.x} cy={this.y} r={this.r} stroke="black" strokeWidth="2" fill="white" />
+                <text /*className={styles.node_data}*/ x={this.x} y={this.y} textAnchor="middle" fontSize="smaller">{this.props.value}</text>
             </g>
             
             

@@ -4,7 +4,7 @@ import Layout from './components/Layout/Layout';
 
 function App() {
   return (
-    <div className="App" style={{height:'100vh', display:'flex' , 'flex-direction':'column' }}>
+    <div className="App" style={{height:'100vh', display:'flex' , 'flexDirection':'column' }}>
       <Navbar></Navbar> 
       <Layout/>
     </div>

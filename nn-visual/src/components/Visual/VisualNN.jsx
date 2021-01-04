@@ -5,13 +5,17 @@ import NN from '../Visual/NN'
 
 class VisualNN extends React.Component{
 
-    constructor(props){
-        super();
-    }
+    /*constructor(props){
+        super(props);
+    }*/
 
     render(){
+        console.log("b")
         return (
-            <NN></NN>
+            <div>
+                <NN neuralNetwork_rep={this.props.neuralNetwork.getRepresentation() } num={this.props.num}></NN>
+            </div>
+            
         )
     }
 

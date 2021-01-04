@@ -4,53 +4,62 @@ import NeuralNetwork from '../../NeuralNetwork/NeuralNetwork'
 import VisualNN from '../Visual/VisualNN'
 
 import styles from './Layout.module.css'
+import InfoPanel from './InfoPanel'
 
 class Layout extends React.Component{
 
     constructor(props){
-        super();
+        super(props);
+        this.nn = new NeuralNetwork()
         this.state = {
-            nn : new NeuralNetwork()
+            neuralNetwork : this.nn,
         }
     }
-    /*  
-        <div className={styles.leftPane}>
-            Hey    
-        </div>
-        <div className={styles.rightPane}>
-            <VisualNN/>
-        </div>*/
+
+    generateNN(){
+        this.nn.createRandomNN();
+        this.setNN();
+    }
+
+    randomizeNN(){
+        this.nn.randomize();
+        this.setNN();
+    }
+
+    feedForward(){
+        this.nn.feedforward();
+        this.setNN();
+    }
+
+    feedForwardStepNode(){
+        this.nn.feedforwardStepNode();
+        this.setNN();
+    }
+    feedForwardStepLayer(){
+        this.nn.feedforwardStepLayer();
+        this.setNN();
+    }
+
+    setNN(){
+        this.setState({
+            neuralNetwork : this.nn,
+        })
+    }
+
     render(){
+        console.log("a")
         return (
             <div className={styles.splitScreen}>
                 <div className={styles.leftPane}>
-
-                    <div className={styles.content_wrapper}>
-                        HeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHe
-                        yHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHe
-                        yHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHe
-                        yHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHey
-                        HeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyH
-                        eyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHe
-                        yHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHey
-                        HeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyH
-                        eyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHe
-                        yHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHe
-                        yHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHey
-                        HeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyH
-                        eyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyH
-                        eyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHey
-                        HeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHey
-                        HeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyH
-                        eyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHe
-                        yHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHey
-                        HeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyH
-                        eyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHeyHe
-                    </div>
-   
+                    <InfoPanel/>
                 </div>
                 <div className={styles.rightPane}>
-                    <VisualNN/>
+                    <VisualNN neuralNetwork={this.state.neuralNetwork} num={this.state.num}/>
+                    <button onClick={this.feedForward.bind(this)}>FeedForward</button>
+                    <button onClick={this.feedForwardStepNode.bind(this)}>FeedForward Step Node</button>
+                    <button onClick={this.feedForwardStepLayer.bind(this)}>FeedForward Step Layer</button>
+                    <button onClick={this.randomizeNN.bind(this)}>Randomize</button>
+                    <button onClick={this.generateNN.bind(this)}>Generate</button>
                 </div>
             </div>
         )

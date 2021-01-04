@@ -20,12 +20,12 @@ class Edge extends React.Component{
         let n_r = inter(-Math.PI/2, Math.PI/2,0,r, angle)
         let middle = {x : this.x1 + n_r*Math.cos(angle), y : this.y1 + n_r*Math.sin(angle)}
         angle = angle * 180 / Math.PI;
-        console.log(n_r,middle,angle);
+        //console.log(n_r,middle,angle);
         let transform = `rotate(${angle}, ${middle.x}, ${middle.y})`;
         return (
             <g>
                 <line x1={this.x1} y1={this.y1} x2={this.x2} y2={this.y2} stroke="black" />
-                <text x={middle.x} y={middle.y - 10} text-anchor="middle" font-size="smaller" transform={transform} >{this.weight}</text>
+                <text x={middle.x} y={middle.y - 10} textAnchor="middle" fontSize="smaller" transform={transform} >{this.weight}</text>
             </g>
             
             

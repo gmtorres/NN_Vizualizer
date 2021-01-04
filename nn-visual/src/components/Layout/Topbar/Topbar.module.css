@@ -1,0 +1,26 @@
+.Topbar {
+    background-color: #d9e6ff;
+    height: 40px;
+    margin:0px;
+    padding-left: 20px;
+
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    text-decoration: none;
+    list-style: none;
+    width: 100%;
+}
+
+.TopbarItem{
+    padding: 9px 5px;
+    flex: 1 1 auto
+}
+
+.isNotActive:hover{
+    background-color: #c5d3ee;
+}
+
+.isActive{
+    background-color: #5a74a8;
+}
