@@ -4,7 +4,7 @@ import Feedback from "../../Info/Feedback";
 
 export const TopbarData = [
     {
-        title: 'Basic Info',
+        title: 'Introduction',
         component : <InfoBasic/> 
     },
     {
@@ -13,6 +13,18 @@ export const TopbarData = [
     },
     {
         title: 'Backpropagation',
+        component : <Feedback/>
+    },
+    {
+        title: 'Activation Functions',
+        component : <Feedback/>
+    },
+    {
+        title: 'Data',
+        component : <Feedback/>
+    },
+    {
+        title: 'CNN',
         component : <Feedback/>
     },
 

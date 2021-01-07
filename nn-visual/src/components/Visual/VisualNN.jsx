@@ -2,6 +2,7 @@ import React from 'react';
 
 import NN from '../Visual/NN'
 
+import styles from './VisualNN.module.css'
 
 class VisualNN extends React.Component{
 
@@ -10,9 +11,9 @@ class VisualNN extends React.Component{
     }*/
 
     render(){
-        console.log("b")
+        
         return (
-            <div>
+            <div className={styles.VisualNN}>
                 <NN neuralNetwork_rep={this.props.neuralNetwork.getRepresentation() } num={this.props.num}></NN>
             </div>
             

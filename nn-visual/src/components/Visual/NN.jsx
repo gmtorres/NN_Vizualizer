@@ -9,11 +9,11 @@ class NN extends React.Component{
 
         this.ref = React.createRef()
 
-        this.height = props.height ? props.height : 500;
+        this.height = props.height ? props.height : 400;
         this.width = props.width ? props.width : 700;
         
         this.buildModel();
-        this.k = 0
+        this.key = 0
     }
 
     buildModel(){
@@ -40,7 +40,10 @@ class NN extends React.Component{
             let space = (max_h - dy * this.layers[i].length)/2;
             for(let n = 0; n < this.layers[i].length; n++){
                 let node = this.layers[i][n];
-                l.push({x : marginx+ r + dx * i , y : marginy+ r + space + dy * n , r : r , edges : node.edges, value : node.value})
+                if(i == this.n_layers-1)
+                    l.push({x : marginx+ r + dx * i , y : marginy+ r + space + dy * n , r : r , edges : node.edges, value : node.value, error: node.error})
+                else
+                    l.push({x : marginx+ r + dx * i , y : marginy+ r + space + dy * n , r : r , edges : node.edges, value : node.value})
             }
             nn_rep.push(l)
         }
@@ -53,8 +56,8 @@ class NN extends React.Component{
     }
     updateRepresentation(){
         //if(this.ref == null || this.ref.current == null) return;
-        this.width = this.ref.current.clientWidth;
-        this.forceUpdate()
+        /*this.width = this.ref.current.clientWidth;
+        this.forceUpdate()*/
     }
 
 
@@ -83,15 +86,17 @@ class NN extends React.Component{
                 this.nn.push(
                     <Node key={"Node"+l.toString()+n.toString()} 
                         x={node1.x} y={node1.y} r={node1.r} 
-                        value={Math.round(node1.value * 1000)/1000}/>
+                        value={Math.round(node1.value * 1000)/1000}
+                        error={Math.round(node1.error * 1000)/1000}
+                        />
                     )
             }
 
         }
-        console.log("c")
+        
         return (
             <div>
-                <svg width={'100%'} height={this.height} ref={this.ref} key={"svg" + this.k++}>
+                <svg width={'100%'} height={this.height} ref={this.ref} key={"svg" + this.key++}>
                     {this.nn}
                 </svg>
             </div>
