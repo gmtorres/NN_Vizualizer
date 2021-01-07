@@ -12,7 +12,7 @@ class Layout extends React.Component{
     constructor(props){
         super(props);
 
-        this.nn = new NeuralNetwork()
+        this.nn = new NeuralNetwork(2,2)
 
         let temp_inp_labels = [];
         let temp_out_labels = [];
@@ -28,7 +28,7 @@ class Layout extends React.Component{
 
         this.state = {
             neuralNetwork : this.nn,
-            data : [],
+            data : [[0.05,0.1,0.01,0.99]],
             input_labels: temp_inp_labels,
             output_labels: temp_out_labels,
         }
@@ -72,14 +72,15 @@ class Layout extends React.Component{
         this.setNN();
     }
 
-    backPropagation(){
+    train(){
         let input_data = [];
         let output_data = [];
         this.state.data.forEach(d => {
             input_data.push(d.slice(0,this.state.input_labels.length))
             output_data.push(d.slice(-this.state.output_labels.length))
         })
-        this.nn.backpropagation(input_data,output_data);
+        for(let i = 0; i < 1000; i++)
+            this.nn.train(input_data,output_data);
         this.setNN();
     }
 
@@ -204,6 +205,7 @@ class Layout extends React.Component{
                     <button onClick={this.feedForwardStepLayer.bind(this)}>FeedForward Step Layer</button>
                     <button onClick={this.randomizeNN.bind(this)}>Randomize</button>
                     <button onClick={this.generateNN.bind(this)}>Generate</button>
+                    <button onClick={this.train.bind(this)}>Train</button>
                 </div>
             </div>
         )
