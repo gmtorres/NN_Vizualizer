@@ -13,7 +13,7 @@ class Node extends React.Component{
 
     render(){
         let value_text = "";
-        if((this.props.value && this.props.value != NaN) || this.props.value == 0)
+        if((this.props.value && this.props.value != NaN) || this.props.value === 0)
             value_text = <text /*className={styles.node_data}*/ x={this.x} y={this.y} 
                             textAnchor="middle" fontSize="smaller">v:{this.props.value}</text>
         let error_text = "";

@@ -69,7 +69,7 @@ class NN extends React.Component{
             if(l < layers.length-1){
                 for(let n = 0; n < layers[l].length;n++){
                     let node1 = layers[l][n];
-                    for(let e = 0; e < layers[l+1].length;e++){
+                    for(let e = 0; e < node1.edges.length;e++){
                         let node2 = layers[l+1][e];
                         this.nn.push(
                             <Edge key={"Edge"+l.toString()+n.toString()+e.toString()} 

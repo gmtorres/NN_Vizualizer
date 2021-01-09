@@ -13,7 +13,48 @@ class Layout extends React.Component{
         super(props);
 
         this.nn = new NeuralNetwork(2,2)
-
+        this.nn.import({
+            "learning_rate": 0.5,
+            "bias": true,
+            "weights": [
+              [
+                [
+                  0.15,
+                  0.25
+                ],
+                [
+                  0.20,
+                  0.30
+                ],
+                [
+                  0.35,
+                  0.35
+                ]
+              ],
+              [
+                [
+                  0.40,
+                  0.50
+                ],
+                [
+                  0.45,
+                  0.55
+                ],
+                [
+                  0.6,
+                  0.6
+                ]
+              ],
+              [
+                [
+                  1
+                ],
+                [
+                  1
+                ]
+              ]
+            ]
+          })
         let temp_inp_labels = [];
         let temp_out_labels = [];
         this.input_key = 0;
@@ -33,6 +74,7 @@ class Layout extends React.Component{
             output_labels: temp_out_labels,
         }
         this.input_index = 0;
+        console.log(this.nn.export())
     }
 
     generateNN(){
@@ -79,7 +121,7 @@ class Layout extends React.Component{
             input_data.push(d.slice(0,this.state.input_labels.length))
             output_data.push(d.slice(-this.state.output_labels.length))
         })
-        for(let i = 0; i < 1000; i++)
+        for(let i = 0; i < 10000; i++)
             this.nn.train(input_data,output_data);
         this.setNN();
     }
@@ -101,7 +143,7 @@ class Layout extends React.Component{
 
     addInput(){
         let temp = this.state.data;
-        temp.forEach(t => t.push(0))
+        temp.forEach(t => t.splice(this.state.input_labels.length,0,0))
         let labels_t = this.state.input_labels
         labels_t.push("Input_"+this.input_key++);
         this.nn.addInputNode();
@@ -122,6 +164,14 @@ class Layout extends React.Component{
             neuralNetwork : this.nn,
             data : temp,
             output_labels : labels_t
+        })
+    }
+
+    removeDataEntry(index){
+        let temp = this.state.data;
+        temp.splice(index,1);
+        this.setState({
+            data : temp,
         })
     }
 
@@ -186,6 +236,7 @@ class Layout extends React.Component{
                 in : this.changeInputLabels.bind(this),
                 out : this.changeOutputLabels.bind(this),
                 },
+            removeDataEntry : this.removeDataEntry.bind(this),
             changeData : this.changeData.bind(this),
         }
         return (

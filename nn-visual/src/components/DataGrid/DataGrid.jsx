@@ -27,7 +27,12 @@ class DataGrid extends React.Component{
         let in_size = this.props.input_labels.length
         let out_size = this.props.output_labels.length
         for(let entry = 0; entry < data.length; entry++){
-            grid.push(<DataEntry in_size={in_size} out_size={out_size} data={data[entry]} ref={this} callback={changes.changeData.bind(this,entry)}/>)
+            grid.push(<DataEntry 
+                        in_size={in_size} out_size={out_size} 
+                        data={data[entry]} ref={this} 
+                        callback={changes.changeData.bind(this,entry)}
+                        removeEntry={changes.removeDataEntry.bind(this,entry)}
+                        />)
         }
         return (
             <div key={"Grid_" + this.key++} className={styles.grid_wrapper}>
@@ -35,8 +40,8 @@ class DataGrid extends React.Component{
                     {grid}
                     
                     <div className={styles.grid_container_buttons}>
-                        <button onClick={changes.addEntry.bind(this)}>Add entry</button>
                         <button onClick={changes.addInput.bind(this)}>Add Input</button>
+                        <button onClick={changes.addEntry.bind(this)}>Add entry</button>
                         <button onClick={changes.addOutput.bind(this)}>Add Output</button>
                     </div>
 

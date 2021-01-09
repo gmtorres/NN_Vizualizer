@@ -18,6 +18,10 @@
     text-align: left;
 }
 
+.leftPane_content_wrapper {
+    width: 100%;
+}
+
 .content_wrapper{
     display: flex;
     min-height: min-content;

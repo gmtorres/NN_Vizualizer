@@ -24,7 +24,7 @@ class InfoPanel extends React.Component{
 
     render(){
         return (
-            <div>
+            <div className={styles.leftPane_content_wrapper}>
                 <Topbar onClick={this.onClick.bind(this)} current={this.state.tabName}/>
                 <div className={styles.content_wrapper}>
                     {this.state.current}

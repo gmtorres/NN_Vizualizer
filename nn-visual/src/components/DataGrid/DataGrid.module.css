@@ -57,7 +57,7 @@
 }
 
 .entry_separator{
-    flex : 1 1 auto;
+    flex : 1 0 0;
 }
 
 
