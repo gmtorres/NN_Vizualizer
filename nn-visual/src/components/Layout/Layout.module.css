@@ -14,7 +14,7 @@
     width: 55%;
     border-right: solid 1px rgb(218, 218, 218);
     display: flex;
-    overflow-y:auto;
+    /*overflow-y:auto;*/
     text-align: left;
 }
 
@@ -29,29 +29,40 @@
     margin: 0 20px;
 }
 
-
-.leftPane::-webkit-scrollbar {
-    width: 12px;
+.InfoPanel_wrapper{
+    width: 100%;
+    display: flex;
+    flex-direction:column;
 }
 
-.leftPane::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
-    border-radius: 10px;
+.InfoPanel_content{
+    flex:1 0 auto;
+    overflow-y:auto;
 }
 
-.leftPane::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
-}
 
+
+.leftPane_content {
+    /*overflow-y: auto;*/
+    display: flex;
+    height: 100%;
+}
 
 .rightPane {
     width: 45%;
     text-align: center;
-    /*display: flex;
-    flex-direction: column;*/
+    display: flex;
+    flex-direction: column;
+}
+
+.rightPane_section {
+    flex-grow: 1;
+  
+    display: flex;
+    flex-direction: column;
+    
+    /* for Firefox */
+    min-height: 0;
 }
 
 

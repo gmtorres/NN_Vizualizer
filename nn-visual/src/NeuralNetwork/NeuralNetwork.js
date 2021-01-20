@@ -6,7 +6,7 @@ export default class NeuralNetwork{
 
         this.bias = true;
 
-        this.learning_rate = 0.5;
+        this.learning_rate = 0.02;
         
         this.layers = [];
         this.max_height = 0;
@@ -25,7 +25,7 @@ export default class NeuralNetwork{
     }
 
     getLayerSize(l){
-        if(l == this.layers.length-1)
+        if(l === this.layers.length-1)
             return this.layers[l].length;
         if(this.bias)
             return this.layers[l].length - 1;
@@ -34,10 +34,10 @@ export default class NeuralNetwork{
 
     addInputNode(){
         let edges = [];
-        for(let i = 0; i < this.layers[1].length;i++){
+        for(let i = 0; i < this.getLayerSize(1);i++){
             edges.push(Math.random());
         }
-        this.layers[0].push({value : 0, edges : edges});
+        this.layers[0].splice(this.getLayerSize(0),0,{value : NaN, edges : edges});
         if(this.layers[0].length > this.max_height)
             this.max_height = this.layers[0].length;
     }
@@ -46,9 +46,37 @@ export default class NeuralNetwork{
         for(let  i = 0; i < this.layers[this.layers.length-2].length;i++){
             this.layers[this.layers.length-2][i].edges.push(Math.random());
         }
-        this.layers[this.layers.length-1].push({value : 0, edges : [1]});
+        this.layers[this.layers.length-1].push({value : NaN, edges : [1]});
         if(this.layers[this.layers.length-1].length > this.max_height)
             this.max_height = this.layers[this.layers.length-1].length;
+    }
+    addNode(layer){
+        for(let  i = 0; i < this.layers[layer-1].length;i++){
+            this.layers[layer-1][i].edges.push(Math.random());
+        }
+        let edges = [];
+        for(let i = 0; i < this.getLayerSize(layer+1); i++){
+            edges.push(Math.random());
+        }
+        this.layers[layer].splice(this.getLayerSize(layer),0,{value : NaN, edges : edges});
+        if(this.layers[layer].length > this.max_height)
+            this.max_height = this.layers[layer].length;
+    }
+
+    addLayer(layer){
+        for(let i = 0; i < this.layers[layer].length;i++){
+            this.layers[layer][i].edges = [];
+        }
+        this.layers.splice(layer+1,0,[]);
+        if(this.bias){
+            let edges = [];
+            for(let i = 0; i < this.getLayerSize(layer+2); i++){
+                edges.push(Math.random());
+            }
+            this.layers[layer+1].push({value : 1, edges : edges});
+
+        }
+        this.addNode(layer+1);
     }
 
     deleteInputNode(index){
@@ -70,13 +98,13 @@ export default class NeuralNetwork{
     }
 
     activationFunction(val){
-        //return val;
-        return 1 / (1 + Math.exp(-val));
+        return val;
+        //return 1 / (1 + Math.exp(-val));
     }
 
     activationFunction_derivative(val){
-        //return 1;
-        return val * (1-val)
+        return 1;
+        //return val * (1-val)
     }
 
     resetVars(){
@@ -135,16 +163,18 @@ export default class NeuralNetwork{
             }
         }
     }
-
-
-    feedforward(input_data, output_data){
+    setInputLayer(input_data){
         if(input_data != null){
             for(let i = 0; i < input_data.length;i++){
                 this.layers[0][i].value = input_data[i];
             }
         }
+    }
+
+    feedforward(input_data, output_data){
+        this.setInputLayer(input_data)
         for(let l = 1; l < this.layers.length; l++){
-            let layer = this.layers[l];
+            //let layer = this.layers[l];
             let layer_prev = this.layers[l-1];
             for(let n = 0; n < this.getLayerSize(l); n++){
                 let sum = 0;
@@ -167,9 +197,13 @@ export default class NeuralNetwork{
         //console.log(error);
     }
 
-    feedforwardStepNode(){
-        if(this.step_node == null)
+    feedforwardStepNode(input_data, output_data){
+        if(this.step_node == null){
             this.step_node = 0;
+            this.clearNodes();
+            this.setInputLayer(input_data);
+            return false;
+        }
         if(this.step_layer == null)
             this.step_layer = 1;
 
@@ -187,13 +221,19 @@ export default class NeuralNetwork{
         if(this.step_layer >= this.layers.length){
             this.step_layer = null;
             this.step_node = null;
+            return true;
         }
+        return false;
     }
 
-    feedforwardStepLayer(){
-        if(this.step_layer == null)
+    feedforwardStepLayer(input_data, output_data){
+        if(this.step_layer == null){
             this.step_layer = 1;
-        let layer = this.layers[this.step_layer];
+            this.clearNodes();
+            this.setInputLayer(input_data);
+            return false;
+        }
+        //let layer = this.layers[this.step_layer];
         let layer_prev = this.layers[this.step_layer-1];
         let n = (this.step_node == null) ? 0 : this.step_node;
         for(; n < this.getLayerSize(this.step_layer); n++){
@@ -207,7 +247,9 @@ export default class NeuralNetwork{
         this.step_node = null;
         if(this.step_layer >= this.layers.length){
             this.step_layer = null;
+            return true;
         }
+        return false;
     }
 
     train(input_data, output_data){
@@ -280,7 +322,7 @@ export default class NeuralNetwork{
             let l = [];
             layer.forEach(edges =>{
                 let node = {edges:edges};
-                if(this.bias && l.length == layer.length-1 && this.layers.length != obj.weights.length-1)
+                if(this.bias && l.length === layer.length-1 && this.layers.length !== obj.weights.length-1)
                     node.value = 1;
                 l.push(node)
             })

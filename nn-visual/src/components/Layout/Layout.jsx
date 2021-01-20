@@ -14,7 +14,7 @@ class Layout extends React.Component{
 
         this.nn = new NeuralNetwork(2,2)
         this.nn.import({
-            "learning_rate": 0.5,
+            "learning_rate": 0.0005,
             "bias": true,
             "weights": [
               [
@@ -69,12 +69,12 @@ class Layout extends React.Component{
 
         this.state = {
             neuralNetwork : this.nn,
-            data : [[0.05,0.1,0.01,0.99]],
+            data : [],
             input_labels: temp_inp_labels,
             output_labels: temp_out_labels,
         }
         this.input_index = 0;
-        console.log(this.nn.export())
+        //console.log(this.nn.export())
     }
 
     generateNN(){
@@ -92,25 +92,36 @@ class Layout extends React.Component{
         this.nn.randomize();
         this.setNN();
     }
-
-    feedForward(){
+    getDataEntry() {
         let input_data = null;
         let output_data = null;
         if(this.state.data.length !== 0){
             input_data = this.state.data[this.input_index].slice(0,this.state.input_labels.length);
             output_data = this.state.data[this.input_index].slice(-this.state.output_labels.length);
-            this.input_index = (this.input_index+1)%this.state.data.length;
         }
+        return [input_data, output_data]
+    }
+    incrementEntryIndex(){
+        if(this.state.data.length > 0)
+            this.input_index = (this.input_index+1)%this.state.data.length;
+    }
+    feedForward(){
+        let [input_data, output_data] = this.getDataEntry();
+        this.incrementEntryIndex();
         this.nn.feedforward(input_data,output_data);
         this.setNN();
     }
 
     feedForwardStepNode(){
-        this.nn.feedforwardStepNode();
+        let [input_data, output_data] = this.getDataEntry();
+        let next = this.nn.feedforwardStepNode(input_data,output_data);
+        if(next) this.incrementEntryIndex();
         this.setNN();
     }
     feedForwardStepLayer(){
-        this.nn.feedforwardStepLayer();
+        let [input_data, output_data] = this.getDataEntry();
+        let next = this.nn.feedforwardStepLayer(input_data,output_data);
+        if(next) this.incrementEntryIndex();
         this.setNN();
     }
 
@@ -121,8 +132,18 @@ class Layout extends React.Component{
             input_data.push(d.slice(0,this.state.input_labels.length))
             output_data.push(d.slice(-this.state.output_labels.length))
         })
-        for(let i = 0; i < 10000; i++)
+        for(let i = 0; i < 100; i++)
             this.nn.train(input_data,output_data);
+        this.setNN();
+    }
+
+    addNode(layer){
+        this.nn.addNode(layer);
+        this.setNN();
+    }
+
+    addLayer(layer){
+        this.nn.addLayer(layer);
         this.setNN();
     }
 
@@ -220,9 +241,10 @@ class Layout extends React.Component{
             data : temp
         })
     }
+    
 
     render(){
-        console.log("a");
+        //console.log("a");
         //let input_size = this.state.neuralNetwork.getInputLayerSize();
         let changes = {
             addEntry : this.addEntry.bind(this),
@@ -239,24 +261,37 @@ class Layout extends React.Component{
             removeDataEntry : this.removeDataEntry.bind(this),
             changeData : this.changeData.bind(this),
         }
+        let NNfunc = {
+            addNode : this.addNode.bind(this),
+            addLayer : this.addLayer.bind(this),
+        }
         return (
             <div className={styles.splitScreen}>
                 <div className={styles.leftPane}>
                     <InfoPanel/>
                 </div>
                 <div className={styles.rightPane}>
-                    <DataGrid data={this.state.data} 
-                                input_labels={this.state.input_labels} 
-                                output_labels={this.state.output_labels} 
-                                changes={changes}
-                    />
-                    <VisualNN neuralNetwork={this.state.neuralNetwork} num={this.state.num}/>
-                    <button onClick={this.feedForward.bind(this)}>FeedForward</button>
-                    <button onClick={this.feedForwardStepNode.bind(this)}>FeedForward Step Node</button>
-                    <button onClick={this.feedForwardStepLayer.bind(this)}>FeedForward Step Layer</button>
-                    <button onClick={this.randomizeNN.bind(this)}>Randomize</button>
-                    <button onClick={this.generateNN.bind(this)}>Generate</button>
-                    <button onClick={this.train.bind(this)}>Train</button>
+                    <div style={{display:'flex',flexDirection:'column',flex:'1 0 auto'}}>
+                        <div style={{height:'40%',display:'flex',flexDirection:'column'}}>
+                            <DataGrid data={this.state.data} 
+                                        input_labels={this.state.input_labels} 
+                                        output_labels={this.state.output_labels} 
+                                        changes={changes}
+                            />
+                        </div>
+                        <div style={{height:'60%',display:'flex',flexDirection:'column'}}>
+                            <VisualNN neuralNetwork={this.state.neuralNetwork} num={this.state.num} func={NNfunc}/>
+                            <div style={{flex:'1 0 auto'}}>
+                                <button onClick={this.feedForward.bind(this)}>FeedForward</button>
+                                <button onClick={this.feedForwardStepNode.bind(this)}>FeedForward Step Node</button>
+                                <button onClick={this.feedForwardStepLayer.bind(this)}>FeedForward Step Layer</button>
+                                <button onClick={this.randomizeNN.bind(this)}>Randomize</button>
+                                <button onClick={this.generateNN.bind(this)}>Generate</button>
+                                <button onClick={this.train.bind(this)}>Train</button>
+                            </div>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         )
@@ -265,3 +300,32 @@ class Layout extends React.Component{
 }
 
 export default Layout;
+
+
+/*
+
+<div className={styles.splitScreen}>
+                <div className={styles.leftPane}>
+                    <InfoPanel/>
+                </div>
+                <div className={styles.rightPane}>
+                    <div className={styles.rightPane_section}>
+                        <DataGrid data={this.state.data} 
+                                    input_labels={this.state.input_labels} 
+                                    output_labels={this.state.output_labels} 
+                                    changes={changes}
+                        />
+                        <VisualNN neuralNetwork={this.state.neuralNetwork} num={this.state.num}/>
+                        <div>
+                            <button onClick={this.feedForward.bind(this)}>FeedForward</button>
+                            <button onClick={this.feedForwardStepNode.bind(this)}>FeedForward Step Node</button>
+                            <button onClick={this.feedForwardStepLayer.bind(this)}>FeedForward Step Layer</button>
+                            <button onClick={this.randomizeNN.bind(this)}>Randomize</button>
+                            <button onClick={this.generateNN.bind(this)}>Generate</button>
+                            <button onClick={this.train.bind(this)}>Train</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+*/

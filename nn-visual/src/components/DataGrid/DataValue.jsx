@@ -14,19 +14,7 @@ function DataValue(props){
         }
     });
 
-    const handleKeyDown = (e) => {
-        const { key } = e;
-        const keys = ["Escape", "Tab"];
-        const enterKey = "Enter";
-        const allKeys = [...keys, enterKey];
-        if (allKeys.indexOf(key) > -1) {
-          setEditing(false);
-        }
-        console.log(key)
-        /*if(!isFinite(key) && key !== "Backspace" && key !== "." )
-            e.preventDefault();*/
 
-      };
 
     let display;
     let class_n = styles.entry_value + " "
@@ -37,37 +25,16 @@ function DataValue(props){
 
     if(props.separator)
         return <div className={class_n}/>
-    
-    /*
-    if(editing){
-            display =
-                <div className={class_n} onBlur={() => setEditing(false)} onKeyDown={e => handleKeyDown(e)}> 
-                    {input}
-                </div>
-    }
-    else
-        if(props.label){
-            display = <div className={class_n} >
-                        <span onClick={() => setEditing(true)}>{props.value}</span>
-                        <button onClick={() => props.remove()}>X</button>
-                    </div>
-        }else{
-            display = <div className={class_n} >
-                        <span onClick={() => setEditing(true)}>{props.value}</span>
-                    </div>
-        }
-    */
 
-   if(props.label){
-    display = <div className={class_n} >
-                    {input}
-                    <button onClick={() => props.remove()}>X</button>
-                </div>
-    }else{
-        display = <div className={class_n} >
-                    {input}
-                </div>
-    }
+    let button
+    if(props.label)
+        button = <button onClick={() => props.remove()}>X</button>
+    display = (
+            <div className={class_n} onClick={() => setEditing(true)}>
+                {input}
+                {button}
+            </div>
+            )
 
 
     return display

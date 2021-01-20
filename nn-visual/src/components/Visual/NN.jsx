@@ -2,6 +2,8 @@ import React from 'react';
 import Node from './Node/Node';
 import Edge from './Edge/Edge';
 
+import styles from './VisualNN.module.css'
+
 class NN extends React.Component{
 
     constructor(props){
@@ -9,8 +11,8 @@ class NN extends React.Component{
 
         this.ref = React.createRef()
 
-        this.height = props.height ? props.height : 400;
-        this.width = props.width ? props.width : 700;
+        /*this.height = props.height !== undefined ? props.height : 400;
+        this.width = props.width ? props.width : 700;*/
         
         this.buildModel();
         this.key = 0
@@ -24,14 +26,33 @@ class NN extends React.Component{
         this.n_layers = this.props.neuralNetwork_rep.representation.length;
 
         this.representation = []
-        
+        this.buttons = []
+
+        let buttonsDivHeight = 20;
+
         let marginx = 50;
-        let marginy = 20;
+        let marginy = 10;
         let r = 25;
-        let dx = (this.width-2*r-2*marginx)/(this.n_layers-1);
-        let dy = (this.height-2*r-2*marginy)/this.max_height;
+        
+        let usable_height = this.props.height-2*r-2*marginy - 2 * buttonsDivHeight;
+        if(usable_height < 0) usable_height = this.props.height;
+        if(usable_height === 0) return
+
+        let dx = (this.props.width-2*r-2*marginx)/(this.n_layers-1);
+        let dy = (usable_height)/(this.max_height-1);
 
         let max_h = this.max_height * dy;
+
+        for(let i = 0; i < this.n_layers - 1; i++){
+            this.buttons.push(
+                <text className={styles.addLayerButton} x={marginx+ r + dx * i + dx/2 - r/5} y={buttonsDivHeight/2} onClick={()=> this.props.func.addLayer(i)}>+</text>
+            )
+        }
+        for(let i = 1; i < this.n_layers - 1; i++){
+            this.buttons.push(
+                <text className={styles.addLayerButton} x={marginx + r + dx * i - r/5} y={this.props.height - buttonsDivHeight/2} onClick={()=> this.props.func.addNode(i)}>+</text>
+            )
+        }
 
         let nn_rep = []
 
@@ -40,10 +61,18 @@ class NN extends React.Component{
             let space = (max_h - dy * this.layers[i].length)/2;
             for(let n = 0; n < this.layers[i].length; n++){
                 let node = this.layers[i][n];
-                if(i == this.n_layers-1)
-                    l.push({x : marginx+ r + dx * i , y : marginy+ r + space + dy * n , r : r , edges : node.edges, value : node.value, error: node.error})
+                if(i === this.n_layers-1)
+                    l.push({
+                        x : marginx+ r + dx * i ,
+                        y : marginy+ r + space + dy * n + buttonsDivHeight,
+                        r : r ,
+                        edges : node.edges, value : node.value, error: node.error})
                 else
-                    l.push({x : marginx+ r + dx * i , y : marginy+ r + space + dy * n , r : r , edges : node.edges, value : node.value})
+                    l.push({
+                        x : marginx+ r + dx * i ,
+                        y : marginy+ r + space + dy * n + buttonsDivHeight,
+                        r : r ,
+                        edges : node.edges, value : node.value})
             }
             nn_rep.push(l)
         }
@@ -62,6 +91,7 @@ class NN extends React.Component{
 
 
     render(){
+        console.log(this.props.height);
         this.buildModel();
         let layers = this.representation
         this.nn = [];
@@ -95,8 +125,9 @@ class NN extends React.Component{
         }
         
         return (
-            <div>
-                <svg width={'100%'} height={this.height} ref={this.ref} key={"svg" + this.key++}>
+            <div className={styles.svgWrapper}>
+                <svg width={'100%'} height={'100%'} ref={this.ref} key={"svg" + this.key++}>
+                    {this.buttons}
                     {this.nn}
                 </svg>
             </div>
