@@ -1,3 +1,4 @@
+import activation from "./activation"
 
 export default class NeuralNetwork{
     constructor(input_size,output_size){
@@ -9,9 +10,12 @@ export default class NeuralNetwork{
         this.learning_rate = 0.02;
         
         this.layers = [];
+        this.layer_activation = []
         this.max_height = 0;
 
         this.createRandomNN(input_size,output_size);
+
+        this.expression = []
     }
 
     getInputLayerSize(){
@@ -37,7 +41,7 @@ export default class NeuralNetwork{
         for(let i = 0; i < this.getLayerSize(1);i++){
             edges.push(Math.random());
         }
-        this.layers[0].splice(this.getLayerSize(0),0,{value : NaN, edges : edges});
+        this.layers[0].splice(this.getLayerSize(0),0,{value : NaN, edges : edges, edges_old : [...edges]});
         if(this.layers[0].length > this.max_height)
             this.max_height = this.layers[0].length;
     }
@@ -58,7 +62,7 @@ export default class NeuralNetwork{
         for(let i = 0; i < this.getLayerSize(layer+1); i++){
             edges.push(Math.random());
         }
-        this.layers[layer].splice(this.getLayerSize(layer),0,{value : NaN, edges : edges});
+        this.layers[layer].splice(this.getLayerSize(layer),0,{value : NaN, edges : edges, edges_old : [...edges]});
         if(this.layers[layer].length > this.max_height)
             this.max_height = this.layers[layer].length;
     }
@@ -73,9 +77,11 @@ export default class NeuralNetwork{
             for(let i = 0; i < this.getLayerSize(layer+2); i++){
                 edges.push(Math.random());
             }
-            this.layers[layer+1].push({value : 1, edges : edges});
+            this.layers[layer+1].push({value : 1, edges : edges , edges_old : [...edges]});
 
         }
+        this.layer_activation.splice(layer+1,0,null);
+        this.setLayerActivation(layer+1,"sigm");
         this.addNode(layer+1);
     }
 
@@ -97,15 +103,11 @@ export default class NeuralNetwork{
                 this.max_height = this.layers[i].length
     }
 
-    activationFunction(val){
-        return val;
-        //return 1 / (1 + Math.exp(-val));
+    setLayerActivation(layer,name){
+        if(!activation.hasOwnProperty(name)) return;
+        this.layer_activation[layer] = {name : name, activation : activation[name]}
     }
 
-    activationFunction_derivative(val){
-        return 1;
-        //return val * (1-val)
-    }
 
     resetVars(){
         this.step_layer = null;
@@ -131,6 +133,7 @@ export default class NeuralNetwork{
                 layer.push({value : 1, edges : []});
             if(layer.length > this.max_height) this.max_height = layer.length;
             this.layers.push(layer);
+            this.setLayerActivation(l,"sigm");
         }
         this.randomize()
     }
@@ -147,6 +150,7 @@ export default class NeuralNetwork{
                     if(l+1 < this.layers.length - 1 && this.bias) size -= 1
                     for(let n2 = 0; n2 < size; n2++)
                         this.layers[l][n].edges.push(Math.random());
+                    this.layers[l][n].edges_old = this.layers[l][n].edges
                 }
             }
         }
@@ -166,7 +170,7 @@ export default class NeuralNetwork{
     setInputLayer(input_data){
         if(input_data != null){
             for(let i = 0; i < input_data.length;i++){
-                this.layers[0][i].value = input_data[i];
+                this.layers[0][i].value = parseFloat(input_data[i]);
             }
         }
     }
@@ -176,13 +180,13 @@ export default class NeuralNetwork{
         for(let l = 1; l < this.layers.length; l++){
             //let layer = this.layers[l];
             let layer_prev = this.layers[l-1];
+            let activation = this.layer_activation[l].activation.func
             for(let n = 0; n < this.getLayerSize(l); n++){
                 let sum = 0;
                 for(let prev_n = 0; prev_n < layer_prev.length;prev_n++){
                     sum+= layer_prev[prev_n].value * layer_prev[prev_n].edges[n];
                 }
-                //console.log(sum);
-                this.layers[l][n].value = this.activationFunction(sum);
+                this.layers[l][n].value = activation(sum);
             }
         }
         //let error = 0;
@@ -193,26 +197,41 @@ export default class NeuralNetwork{
                 //error += this.layers[last][i].error * this.layers[last][i].error;
             }
         }
-        //error /= 2;
-        //console.log(error);
+
     }
 
     feedforwardStepNode(input_data, output_data){
+        this.expression = []
         if(this.step_node == null){
             this.step_node = 0;
             this.clearNodes();
             this.setInputLayer(input_data);
+            if(this.step_layer == null)
+                this.step_layer = 1;
             return false;
         }
-        if(this.step_layer == null)
-            this.step_layer = 1;
 
         let layer_prev = this.layers[this.step_layer-1];
         let sum = 0;
+
+        let in_expression = '';
+        in_expression += "in="
+
         for(let prev_n = 0; prev_n < layer_prev.length;prev_n++){
+            in_expression += layer_prev[prev_n].value.toFixed(4) + "*" + layer_prev[prev_n].edges[this.step_node].toFixed(4)
+            if(prev_n !== layer_prev.length - 1)
+                in_expression +="+"
             sum+= layer_prev[prev_n].value * layer_prev[prev_n].edges[this.step_node];
         }
-        this.layers[this.step_layer][this.step_node].value = this.activationFunction(sum);
+        in_expression += " = " + sum.toFixed(4);
+        this.expression.push(String.raw`${in_expression}`)
+
+        let out_expression = ""
+        this.layers[this.step_layer][this.step_node].value = this.layer_activation[this.step_layer].activation.func(sum);
+        out_expression += "out=activation(in)="+ this.layer_activation[this.step_layer].name +"(" + sum.toFixed(4) + ")=" + this.layers[this.step_layer][this.step_node].value.toFixed(4)
+
+        this.expression.push(String.raw`${out_expression}`)
+
         this.step_node++;
         if(this.step_node >= this.getLayerSize(this.step_layer)){
             this.step_node = 0;
@@ -236,26 +255,28 @@ export default class NeuralNetwork{
         //let layer = this.layers[this.step_layer];
         let layer_prev = this.layers[this.step_layer-1];
         let n = (this.step_node == null) ? 0 : this.step_node;
+        let activation = this.layer_activation[this.step_layer].activation.func
         for(; n < this.getLayerSize(this.step_layer); n++){
             let sum = 0;
             for(let prev_n = 0; prev_n < layer_prev.length;prev_n++){
                 sum+= layer_prev[prev_n].value * layer_prev[prev_n].edges[n];
             }
-            this.layers[this.step_layer][n].value = this.activationFunction(sum);
+            this.layers[this.step_layer][n].value = activation(sum);
         }
         this.step_layer++;
-        this.step_node = null;
+        this.step_node = 0;
         if(this.step_layer >= this.layers.length){
             this.step_layer = null;
+            this.step_node = null;
             return true;
         }
         return false;
     }
 
-    train(input_data, output_data){
-        for(let i = 0; i < input_data.length; i++){
-            this.backpropagation(input_data[i],output_data[i]);
-        }
+    train(input_data, output_data, times = 1){
+        for(let t = 0; t < times; t++)
+            for(let i = 0; i < input_data.length; i++)
+                this.backpropagation(input_data[i],output_data[i]);
     }
 
     backpropagation(input_data, output_data){
@@ -263,17 +284,18 @@ export default class NeuralNetwork{
         let last = this.layers.length-1;
         for(let i = 0; i < this.layers[last].length;i++){
             let node = this.layers[last][i];
-            node.derivative = this.activationFunction_derivative(node.value) * node.error;
+            node.derivative = this.layer_activation[0].activation.deriv(node.value) * node.error;
         }
         for(let l = last-1; l >= 0; l--){
             let size_layer = this.layers[l].length;
+            let derivative = this.layer_activation[l].activation.deriv
             for(let i = 0; i < size_layer; i++){
                 let node = this.layers[l][i];
                 let d_sum = 0;
                 for(let a = 0; a < node.edges.length;a++){
                     d_sum += this.layers[l][i].edges[a] * this.layers[l+1][a].derivative;
                 }
-                node.derivative = d_sum * this.activationFunction_derivative(node.value);
+                node.derivative = d_sum * derivative(node.value);
             }
         }
         for(let l = last-1; l >= 0; l--){
@@ -283,18 +305,132 @@ export default class NeuralNetwork{
                 for(let a = 0; a < node.edges.length;a++){
                     if(!isFinite(node.edges[a])) continue;
                     node.edges[a] -= node.value * this.layers[l+1][a].derivative * this.learning_rate;
+                    console.log(node.edges[a]);
                 }
             }   
         }
     }
 
+    backpropagationLayer(input_data, output_data){
+        if(this.step_layer == null){
+            this.feedforward(input_data,output_data);
+            this.step_layer = this.layers.length-1;
+            return false;
+        }
+        
+        let prev_layer = this.step_layer - 1;
 
+        if(this.step_layer === this.layers.length-1){
+            for(let i = 0; i < this.layers[this.step_layer].length;i++){
+                let node = this.layers[this.step_layer][i];
+                node.derivative = this.layer_activation[0].activation.deriv(node.value) * node.error;
+            }
+        }else{
+            let size_layer = this.layers[this.step_layer].length;
+            let derivative = this.layer_activation[this.step_layer].activation.deriv
+            for(let i = 0; i < size_layer; i++){
+                let node = this.layers[this.step_layer][i];
+                let d_sum = 0;
+                for(let a = 0; a < node.edges.length;a++){
+                    d_sum += this.layers[this.step_layer][i].edges_old[a] * this.layers[this.step_layer+1][a].derivative;
+                }
+                node.derivative = d_sum * derivative(node.value);
+            }
+        }
+
+        let size_layer = this.layers[prev_layer].length;
+        for(let i = 0; i < size_layer; i++){
+            let node = this.layers[prev_layer][i];
+            for(let a = 0; a < node.edges.length;a++){
+                if(!isFinite(node.edges[a])) continue;
+                node.edges_old[a] = node.edges[a];
+                node.edges[a] -= node.value * this.layers[this.step_layer][a].derivative * this.learning_rate;
+                console.log(node.edges[a])
+            }
+        }
+
+        this.step_layer--;
+        this.step_node = 0;
+        if(this.step_layer <= 0){
+            this.step_layer = null;
+            this.step_node = null;
+            return true;
+        }
+        return false;
+    }
+
+    backpropagationNode(input_data, output_data){
+        this.expression = []
+        if(this.step_node == null){
+            this.feedforward(input_data,output_data);
+            this.step_node = 0;
+            if(this.step_layer == null)
+                this.step_layer = this.layers.length-1;
+            return false;
+        }
+
+        let node_expression = String.raw`\Delta `;
+        node_expression += `node^${this.step_layer}_${this.step_node} = `
+
+        let prev_layer = this.step_layer - 1;
+
+        if(this.step_layer === this.layers.length-1){
+            
+            let node = this.layers[this.step_layer][this.step_node];
+            node.derivative = this.layer_activation[0].activation.deriv(node.value) * node.error;
+            node_expression += this.layer_activation[0].activation.deriv(node.value).toFixed(4) + "*" + node.error.toFixed(4)
+            node_expression += "=" + node.derivative.toFixed(4)
+        }else{
+            let derivative = this.layer_activation[this.step_layer].activation.deriv
+            
+            let node = this.layers[this.step_layer][this.step_node];
+            let d_sum = 0;
+            for(let a = 0; a < node.edges.length;a++){
+                d_sum += this.layers[this.step_layer][this.step_node].edges_old[a] * this.layers[this.step_layer+1][a].derivative;
+                node_expression += this.layers[this.step_layer][this.step_node].edges_old[a].toFixed(4) + "*" + this.layers[this.step_layer+1][a].derivative.toFixed(4)
+                if(a != node.edges.length - 1) node_expression += "+"
+            }
+            node.derivative = d_sum * derivative(node.value);
+            node_expression += "=" + node.derivative.toFixed(4)
+        }
+        this.expression.push(node_expression)
+        
+        let size_layer = this.layers[prev_layer].length;
+        for(let i = 0; i < size_layer; i++){
+            let weight_expression = "";
+            let node = this.layers[prev_layer][i];
+            
+            if(!isFinite(node.edges[this.step_node])) continue;
+            node.edges_old[this.step_node] = node.edges[this.step_node];
+            node.edges[this.step_node] -= node.value * this.layers[this.step_layer][this.step_node].derivative * this.learning_rate;
+            console.log(node.edges[this.step_node])
+            weight_expression += `weight_{${i},${this.step_node}}^${prev_layer}=` + node.edges_old[this.step_node].toFixed(4) + "-" + node.value.toFixed(4) + "*" + this.layers[this.step_layer][this.step_node].derivative.toFixed(4) + "*" + this.learning_rate.toFixed(4)
+            weight_expression += "=" + node.edges[this.step_node].toFixed(4)
+            this.expression.push(weight_expression)
+        }
+        
+
+        this.step_node++;
+        if(this.step_node >= this.getLayerSize(this.step_layer)){
+            this.step_node = 0;
+            this.step_layer--;
+        }
+        if(this.step_layer <= 0){
+            this.step_layer = null;
+            this.step_node = null;
+            return true;
+        }
+        return false;
+
+    }
 
 
     getRepresentation(){
         return {
             representation : this.layers,
-            height : this.max_height
+            height : this.max_height,
+            activation : Object.keys(activation),
+            layer_act : this.layer_activation
         }
     }
 
@@ -321,7 +457,7 @@ export default class NeuralNetwork{
         obj.weights.forEach(layer =>  {
             let l = [];
             layer.forEach(edges =>{
-                let node = {edges:edges};
+                let node = {edges:edges,edges_old:[...edges]};
                 if(this.bias && l.length === layer.length-1 && this.layers.length !== obj.weights.length-1)
                     node.value = 1;
                 l.push(node)
@@ -331,5 +467,6 @@ export default class NeuralNetwork{
         })
         this.n_layers = this.layers.length
     }
+
 
 }

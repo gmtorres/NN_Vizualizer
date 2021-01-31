@@ -1,5 +1,5 @@
 .VisualNN{
-    flex : 2 1 0
+    flex : 6 1 0
 }
 
 .svgWrapper{
@@ -7,5 +7,5 @@
 }
 
 .addLayerButton:hover{
-    cursor: pointer;;
+    cursor: pointer;
 }

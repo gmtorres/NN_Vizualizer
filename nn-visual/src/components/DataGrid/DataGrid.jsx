@@ -34,6 +34,7 @@ class DataGrid extends React.Component{
                         index = {entry}
                         callback={changes.changeData.bind(this,entry)}
                         removeEntry={changes.removeDataEntry.bind(this,entry)}
+                        active = {entry === this.props.currentValue}
                         />)
         }
         return (

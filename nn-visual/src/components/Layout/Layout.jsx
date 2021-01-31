@@ -1,11 +1,14 @@
 import React from 'react';
 
 import NeuralNetwork from '../../NeuralNetwork/NeuralNetwork'
+import samples from '../../NeuralNetwork/samplesNN'
 import VisualNN from '../Visual/VisualNN'
 
 import styles from './Layout.module.css'
 import InfoPanel from './InfoPanel'
 import DataGrid from '../DataGrid/DataGrid';
+import Expression from '../Expression/Expression';
+
 
 class Layout extends React.Component{
 
@@ -13,48 +16,7 @@ class Layout extends React.Component{
         super(props);
 
         this.nn = new NeuralNetwork(2,2)
-        this.nn.import({
-            "learning_rate": 0.0005,
-            "bias": true,
-            "weights": [
-              [
-                [
-                  0.15,
-                  0.25
-                ],
-                [
-                  0.20,
-                  0.30
-                ],
-                [
-                  0.35,
-                  0.35
-                ]
-              ],
-              [
-                [
-                  0.40,
-                  0.50
-                ],
-                [
-                  0.45,
-                  0.55
-                ],
-                [
-                  0.6,
-                  0.6
-                ]
-              ],
-              [
-                [
-                  1
-                ],
-                [
-                  1
-                ]
-              ]
-            ]
-          })
+        this.setNNFromSample("sample1")
         let temp_inp_labels = [];
         let temp_out_labels = [];
         this.input_key = 0;
@@ -69,12 +31,20 @@ class Layout extends React.Component{
 
         this.state = {
             neuralNetwork : this.nn,
-            data : [],
+            data : [[0.05,0.1,0.01,0.99]],
             input_labels: temp_inp_labels,
             output_labels: temp_out_labels,
         }
-        this.input_index = 0;
+        this.resetDataIndex();
         //console.log(this.nn.export())
+    }
+    resetDataIndex(){
+        this.current_index = -1;
+        this.input_index = 0;
+    }
+
+    setNNFromSample(index){
+        this.nn.import(samples[index]);
     }
 
     generateNN(){
@@ -102,6 +72,7 @@ class Layout extends React.Component{
         return [input_data, output_data]
     }
     incrementEntryIndex(){
+        this.current_index = this.input_index
         if(this.state.data.length > 0)
             this.input_index = (this.input_index+1)%this.state.data.length;
     }
@@ -113,12 +84,14 @@ class Layout extends React.Component{
     }
 
     feedForwardStepNode(){
+        this.current_index = this.input_index
         let [input_data, output_data] = this.getDataEntry();
         let next = this.nn.feedforwardStepNode(input_data,output_data);
         if(next) this.incrementEntryIndex();
         this.setNN();
     }
     feedForwardStepLayer(){
+        this.current_index = this.input_index
         let [input_data, output_data] = this.getDataEntry();
         let next = this.nn.feedforwardStepLayer(input_data,output_data);
         if(next) this.incrementEntryIndex();
@@ -126,14 +99,40 @@ class Layout extends React.Component{
     }
 
     train(){
+        this.resetDataIndex();
         let input_data = [];
         let output_data = [];
         this.state.data.forEach(d => {
             input_data.push(d.slice(0,this.state.input_labels.length))
             output_data.push(d.slice(-this.state.output_labels.length))
         })
-        for(let i = 0; i < 100; i++)
-            this.nn.train(input_data,output_data);
+        this.nn.train(input_data,output_data,100);
+        this.setNN();
+    }
+
+    backpropagate(){
+        this.current_index = this.input_index
+        let [input_data, output_data] = this.getDataEntry();
+        if(input_data == null && output_data == null) return;
+        this.nn.backpropagation(input_data,output_data);
+        this.incrementEntryIndex();
+        this.setNN();
+    }
+
+    backpropagateLayer(){
+        this.current_index = this.input_index
+        let [input_data, output_data] = this.getDataEntry();
+        if(input_data == null && output_data == null) return;
+        let next = this.nn.backpropagationLayer(input_data,output_data);
+        if(next) this.incrementEntryIndex();
+        this.setNN();
+    }
+    backpropagateNode(){
+        this.current_index = this.input_index
+        let [input_data, output_data] = this.getDataEntry();
+        if(input_data == null && output_data == null) return;
+        let next = this.nn.backpropagationNode(input_data,output_data);
+        if(next) this.incrementEntryIndex();
         this.setNN();
     }
 
@@ -144,6 +143,11 @@ class Layout extends React.Component{
 
     addLayer(layer){
         this.nn.addLayer(layer);
+        this.setNN();
+    }
+
+    changeActivationLayer(layer,name){
+        this.nn.setLayerActivation(layer,name)
         this.setNN();
     }
 
@@ -191,6 +195,9 @@ class Layout extends React.Component{
     removeDataEntry(index){
         let temp = this.state.data;
         temp.splice(index,1);
+        this.input_index = (this.input_index+this.state.data.length)%+this.state.data.length;
+        if(index === this.current_index)
+            this.current_index = -1;
         this.setState({
             data : temp,
         })
@@ -241,6 +248,7 @@ class Layout extends React.Component{
             data : temp
         })
     }
+
     
 
     render(){
@@ -264,6 +272,7 @@ class Layout extends React.Component{
         let NNfunc = {
             addNode : this.addNode.bind(this),
             addLayer : this.addLayer.bind(this),
+            changeActivation : this.changeActivationLayer.bind(this)
         }
         return (
             <div className={styles.splitScreen}>
@@ -277,17 +286,31 @@ class Layout extends React.Component{
                                         input_labels={this.state.input_labels} 
                                         output_labels={this.state.output_labels} 
                                         changes={changes}
+                                        currentValue={this.current_index}
                             />
                         </div>
                         <div style={{height:'60%',display:'flex',flexDirection:'column'}}>
                             <VisualNN neuralNetwork={this.state.neuralNetwork} num={this.state.num} func={NNfunc}/>
-                            <div style={{flex:'1 0 auto'}}>
-                                <button onClick={this.feedForward.bind(this)}>FeedForward</button>
-                                <button onClick={this.feedForwardStepNode.bind(this)}>FeedForward Step Node</button>
-                                <button onClick={this.feedForwardStepLayer.bind(this)}>FeedForward Step Layer</button>
-                                <button onClick={this.randomizeNN.bind(this)}>Randomize</button>
-                                <button onClick={this.generateNN.bind(this)}>Generate</button>
-                                <button onClick={this.train.bind(this)}>Train</button>
+                            <div style={{flex:'0 0 auto'}}>
+                                <div>
+                                    <button onClick={this.feedForward.bind(this)}>FeedForward</button>
+                                    <button onClick={this.feedForwardStepNode.bind(this)}>FeedForward Step Node</button>
+                                    <button onClick={this.feedForwardStepLayer.bind(this)}>FeedForward Step Layer</button>
+                                </div> 
+                                <div>
+                                    <button onClick={this.train.bind(this)}>Train</button>
+                                    <button onClick={this.backpropagate.bind(this)}>Backpropagate</button>
+                                    <button onClick={this.backpropagateLayer.bind(this)}>Backpropagate Step Layer</button>
+                                    <button onClick={this.backpropagateNode.bind(this)}>Backpropagate Step Node</button>
+                                </div>
+                                <div>
+                                    <button onClick={this.randomizeNN.bind(this)}>Randomize</button>
+                                    <button onClick={this.generateNN.bind(this)}>Generate</button>
+                                </div>
+                                
+                            </div>
+                            <div style={{flex:'3 0 auto', overflowY:'auto'}}>
+                                <Expression expressions={this.state.neuralNetwork.expression}/>
                             </div>
                         </div>
                     </div>

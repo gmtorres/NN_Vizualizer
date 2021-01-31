@@ -30,6 +30,10 @@
     flex-basis: 0
 }
 
+.entry.active{
+    background-color:  #e2e9f7;
+}
+
 .entry_value{
     flex : 3 1 auto;
     flex-basis: 0;
@@ -58,17 +62,40 @@
     border : none;
     background-color: transparent;
     width: 100%;
+    min-width: 0px;
 }
 
 .entry_label{
     background-color: rgb(235, 235, 235);
-    
+    display: flex;
 }
 
 .entry_separator{
     flex : 1 0 0;
+    text-align: center;
 }
 
+.entry_button{
+    flex : 1 0 0;
+    text-align: center;
+}
+
+.entry_button:hover{
+    background-color: #5a74a8;
+}
+
+.entry_button button{
+    background-color: transparent;
+    border : none;
+    border-radius: 0px;
+    width:100%;
+    height:100%;
+    padding: 0px;
+}
+
+.entry_button button:hover{
+    cursor: pointer;
+}
 
 
 .grid_container_buttons{

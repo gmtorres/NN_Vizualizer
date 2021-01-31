@@ -46,9 +46,11 @@ class DataEntry extends React.Component{
                     />)
             entry.splice(this.props.in_size+1,0,<DataValue separator={true} key={"data_aux_separator" + this.key++}/>)
         }
-
+        let classname = styles.entry;
+        if(this.props.active)
+            classname += " " + styles.active
         return (
-                <div className={styles.entry}>
+                <div className={classname}>
                     {entry}
                 </div>
         )

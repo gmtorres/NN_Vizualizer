@@ -1,0 +1,7 @@
+.expression_wrapper{
+    max-height: 0px;
+}
+
+.expression_wrapper div mjx-container.MathJax{
+    margin: 0px;
+}

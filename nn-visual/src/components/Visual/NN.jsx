@@ -1,6 +1,7 @@
 import React from 'react';
 import Node from './Node/Node';
 import Edge from './Edge/Edge';
+import LayerDropDown from './LayerDropDown'
 
 import styles from './VisualNN.module.css'
 
@@ -45,12 +46,21 @@ class NN extends React.Component{
 
         for(let i = 0; i < this.n_layers - 1; i++){
             this.buttons.push(
-                <text className={styles.addLayerButton} x={marginx+ r + dx * i + dx/2 - r/5} y={buttonsDivHeight/2} onClick={()=> this.props.func.addLayer(i)}>+</text>
+                <text className={styles.addLayerButton} x={marginx+ r + dx * i + dx/2 - r/5} y={buttonsDivHeight/2} onClick={()=> this.props.func.addLayer(i)} key={'buttonup_'+i}>+</text>
             )
         }
         for(let i = 1; i < this.n_layers - 1; i++){
             this.buttons.push(
-                <text className={styles.addLayerButton} x={marginx + r + dx * i - r/5} y={this.props.height - buttonsDivHeight/2} onClick={()=> this.props.func.addNode(i)}>+</text>
+                <text className={styles.addLayerButton} x={marginx + r + dx * i - r/5} y={this.props.height - buttonsDivHeight/2} onClick={()=> this.props.func.addNode(i)} key={'buttondown_'+i}>+</text>
+            )
+        }
+        for(let i = 1; i < this.n_layers; i++){
+            this.buttons.push(
+                <LayerDropDown x={marginx  + dx * i + r} y={ buttonsDivHeight/2} r={r}
+                    func={this.props.func.changeActivation.bind(this,i)}
+                    opts={this.props.neuralNetwork_rep.activation}
+                    current={this.props.neuralNetwork_rep.layer_act[i]} key={'layer_dropDown_'+i}
+                    />
             )
         }
 
@@ -91,7 +101,7 @@ class NN extends React.Component{
 
 
     render(){
-        console.log(this.props.height);
+        //console.log(this.props.height);
         this.buildModel();
         let layers = this.representation
         this.nn = [];
@@ -127,8 +137,8 @@ class NN extends React.Component{
         return (
             <div className={styles.svgWrapper}>
                 <svg width={'100%'} height={'100%'} ref={this.ref} key={"svg" + this.key++}>
-                    {this.buttons}
                     {this.nn}
+                    {this.buttons}
                 </svg>
             </div>
         )
