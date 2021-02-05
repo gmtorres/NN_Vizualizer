@@ -87,3 +87,20 @@
         width: 100%;
     }
 }
+
+.buttons_container {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.div_buttons_container{
+    display: flex;
+    justify-content:center;
+}
+
+.lower_buttons_container *{
+    flex-shrink: 1;
+}
+

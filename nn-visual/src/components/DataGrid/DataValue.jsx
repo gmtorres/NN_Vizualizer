@@ -1,20 +1,11 @@
-import React , { useState, useEffect } from 'react';
+import React from 'react';
 
 import styles from './DataGrid.module.css'
 
 
 function DataValue(props){
-    const [editing, setEditing] = useState(false);
     const inputRef=  React.createRef();
     const input = <input ref={inputRef} type="text" value={props.value} onChange={e => props.callback(e.target.value)}/>;
-
-    useEffect(() => {
-        if (inputRef && inputRef.current && editing === true) {
-            inputRef.current.focus();
-        }
-    });
-
-
 
     let display;
     let class_n = styles.entry_value + " "
@@ -30,7 +21,7 @@ function DataValue(props){
     if(props.label)
         button = <button onClick={() => props.remove()}>X</button>
     display = (
-            <div className={class_n} onClick={() => setEditing(true)}>
+            <div className={class_n}>
                 {input}
                 {button}
             </div>

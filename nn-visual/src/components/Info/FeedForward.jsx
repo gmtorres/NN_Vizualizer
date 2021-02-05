@@ -5,10 +5,10 @@ import Expression from '../Expression/Expression';
 
 const FeedForward = () => {
     //let expression = [];
-    let node_in_expression = String.raw`in_n = \sum_{k=1} out_k \times w_{k,n}`;
-    let node_out_expression = String.raw`out_n = activation(in_n)`;
+    let node_in_expression = String.raw`in_i^l = \sum_{k=1} out_k^{l-1} \times w_{k,i}`;
+    let node_out_expression = String.raw`out_i = activation(in_i)`;
     let sigm_expression = String.raw`sig(x)= \frac{1}{1 + e^{-x}}`;
-    let tanh_expression = String.raw`tanh(x)= \frac{e^t - e^{-t}}{e^t + e^{-t}}`;
+    let tanh_expression = String.raw`tanh(x)= \frac{e^x - e^{-x}}{e^x + e^{-x}}`;
     let relu_expression = String.raw`relu(x)= \cases { x  & if  x >= 0 \cr 0 &  if x < 0  }`;
     //expression.push(node_expression)
     return (
@@ -58,7 +58,11 @@ const FeedForward = () => {
                 </ul>
                 <br/>
                 We do the feedfoward through the entire network, from the input layer to the output layer, layer by layer, and the final
-                result will be in the output layer. This results are the predictions of our network given the correspondent input values.
+                result will be in the output layer.
+                This results are the predictions of our network given the correspondent input values.
+                <br/>
+                This process of computing the out values, from the in values, from the out values of the previous layer can be seen as complex
+                multidimensional composite function, because we are applying a function to the result of applying another function and so on.
                 <br/>
                 <br/>
                 To get better results we can implement something known as bias, in which we add to the in values of each layer or even node,

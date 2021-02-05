@@ -8,6 +8,7 @@ import styles from './Layout.module.css'
 import InfoPanel from './InfoPanel'
 import DataGrid from '../DataGrid/DataGrid';
 import Expression from '../Expression/Expression';
+import RangeBar from '../RangeBar/RangeBar';
 
 
 class Layout extends React.Component{
@@ -291,21 +292,35 @@ class Layout extends React.Component{
                         </div>
                         <div style={{height:'60%',display:'flex',flexDirection:'column'}}>
                             <VisualNN neuralNetwork={this.state.neuralNetwork} num={this.state.num} func={NNfunc}/>
-                            <div style={{flex:'0 0 auto'}}>
-                                <div>
+                            <div className={styles.buttons_container} style={{flex:'0 0 auto'}}>
+                                <div className={styles.div_buttons_container}>
                                     <button onClick={this.feedForward.bind(this)}>FeedForward</button>
-                                    <button onClick={this.feedForwardStepNode.bind(this)}>FeedForward Step Node</button>
                                     <button onClick={this.feedForwardStepLayer.bind(this)}>FeedForward Step Layer</button>
+                                    <button onClick={this.feedForwardStepNode.bind(this)}>FeedForward Step Node</button>
                                 </div> 
-                                <div>
-                                    <button onClick={this.train.bind(this)}>Train</button>
+                                <div className={styles.div_buttons_container}>
                                     <button onClick={this.backpropagate.bind(this)}>Backpropagate</button>
                                     <button onClick={this.backpropagateLayer.bind(this)}>Backpropagate Step Layer</button>
                                     <button onClick={this.backpropagateNode.bind(this)}>Backpropagate Step Node</button>
                                 </div>
-                                <div>
+                                <div className={styles.div_buttons_container}>
                                     <button onClick={this.randomizeNN.bind(this)}>Randomize</button>
                                     <button onClick={this.generateNN.bind(this)}>Generate</button>
+                                    <button onClick={this.train.bind(this)}>Train</button>
+                                    <RangeBar 
+                                        min={1}
+                                        max={5000}
+                                        type="linear"
+                                        value={this.state.neuralNetwork.getTrainingTimes()} 
+                                        callback={(e) => this.state.neuralNetwork.setTrainingTimes(e)}
+                                        info="Train iterations"/>
+                                    <RangeBar min={-10}
+                                        max={0}
+                                        step={0.01}
+                                        type="log" 
+                                        value={this.state.neuralNetwork.getLearningRate()} 
+                                        callback={(e) => this.state.neuralNetwork.setLearningRate(e)}
+                                        info="Learning rate"/>
                                 </div>
                                 
                             </div>

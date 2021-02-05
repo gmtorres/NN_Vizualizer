@@ -1,6 +1,7 @@
 import InfoBasic from "../../Info/InfoBasic";
-import Feedback from "../../Info/Feedback";
+//import Feedback from "../../Info/Feedback";
 import FeedForward from "../../Info/FeedForward";
+import Backpropagation from "../../Info/Backpropagation";
 
 
 export const TopbarData = [
@@ -14,7 +15,7 @@ export const TopbarData = [
     },
     {
         title: 'Backpropagation',
-        component : <Feedback/>
+        component : <Backpropagation/>  
     },
     /*{
         title: 'Activation Functions',

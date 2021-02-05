@@ -1,6 +1,6 @@
 import React , { useState } from 'react';
 
-//import styles from './Node.module.css'
+import styles from './VisualNN.module.css'
 
 const LayerDropDown  = (props) => {
 
@@ -11,11 +11,13 @@ const LayerDropDown  = (props) => {
     const width = 50;
 
     let entries = options.map((opt,i) => {
-        let color = opt === props.current.name ? "#c5d3ee" : "rgb(255,255,255)"
+        //let color = opt === props.current.name ? "#c5d3ee" : "rgb(255,255,255)"
+        let className = styles.activation_opt + " "
+        className += opt === props.current.name ? styles.opt_active : ""
         return (
             <g key={"drop_opt_"+i}>
-                <rect  x={props.x - width/2} y={props.y+props.r/2 + 15 * i} width={width} height="15"
-                    style={{fill:color,stroke:"rgb(0, 0, 0)"}}/>
+                <rect className={className} x={props.x - width/2} y={props.y+props.r/2 + 15 * i} width={width} height="15"
+                    style={{stroke:"rgb(0, 0, 0)"}}/>
                 <text x={props.x + 2 - width/2} y={props.y+props.r/2 + 15 * (i+1) - 2} fontSize="smaller">{opt}</text>
                 <rect  x={props.x - width/2} y={props.y+props.r/2 + 15 * i} width={width} height="15"
                     style={{fill:"transparent"}}

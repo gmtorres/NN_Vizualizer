@@ -18,6 +18,7 @@ class Edge extends React.Component{
                         return r1 + (t-a)/(b-a)*(r2-r1)
                     }
         let n_r = inter(-Math.PI/2, Math.PI/2,0,r, angle)
+        n_r = (this.props.dest+1)/(this.props.total+2)*r*1.3
         let middle = {x : this.x1 + n_r*Math.cos(angle), y : this.y1 + n_r*Math.sin(angle)}
         angle = angle * 180 / Math.PI;
         //console.log(n_r,middle,angle);

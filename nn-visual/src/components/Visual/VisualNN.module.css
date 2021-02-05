@@ -9,3 +9,11 @@
 .addLayerButton:hover{
     cursor: pointer;
 }
+
+svg .activation_opt {
+    fill: #FFFFFF;
+}
+
+svg .opt_active{
+    fill: #c5d3ee;
+}

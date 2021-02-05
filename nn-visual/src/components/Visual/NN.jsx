@@ -20,27 +20,29 @@ class NN extends React.Component{
     }
 
     buildModel(){
-
-        this.layers = this.props.neuralNetwork_rep.representation;
-        this.max_height = this.props.neuralNetwork_rep.height;
+        this.rep = this.props.neuralNetwork_rep
+        this.layers = this.rep.representation;
+        this.max_height = this.rep.height;
         
-        this.n_layers = this.props.neuralNetwork_rep.representation.length;
+        this.n_layers = this.rep.representation.length;
 
         this.representation = []
         this.buttons = []
 
-        let buttonsDivHeight = 20;
+        let buttonsDivHeight = 30;
 
         let marginx = 50;
         let marginy = 10;
-        let r = 25;
         
-        let usable_height = this.props.height-2*r-2*marginy - 2 * buttonsDivHeight;
+        
+        let usable_height = this.props.height-2*marginy - 2 * buttonsDivHeight;
         if(usable_height < 0) usable_height = this.props.height;
         if(usable_height === 0) return
 
+        let r = Math.min(30,usable_height/(this.max_height+2))-5;
+        r=25
         let dx = (this.props.width-2*r-2*marginx)/(this.n_layers-1);
-        let dy = (usable_height)/(this.max_height-1);
+        let dy = (usable_height)/(this.max_height);
 
         let max_h = this.max_height * dy;
 
@@ -115,6 +117,8 @@ class NN extends React.Component{
                             <Edge key={"Edge"+l.toString()+n.toString()+e.toString()} 
                                     x1={node1.x} y1={node1.y}
                                     x2={node2.x} y2={node2.y}
+                                    dest={e}
+                                    total={node1.edges.length}
                                     weight={Math.round(node1.edges[e] * 1000)/1000}
                             />
                         )
@@ -124,10 +128,11 @@ class NN extends React.Component{
             for(let n = 0; n < layers[l].length;n++){
                 let node1 = layers[l][n];
                 this.nn.push(
-                    <Node key={"Node"+l.toString()+n.toString()} 
+                    <Node key={"Node"+l.toString()+","+n.toString()} 
                         x={node1.x} y={node1.y} r={node1.r} 
                         value={Math.round(node1.value * 1000)/1000}
                         error={Math.round(node1.error * 1000)/1000}
+                        active={this.rep.current_layer === l && (this.rep.current_node ==    null || this.rep.current_node === n )}
                         />
                     )
             }
