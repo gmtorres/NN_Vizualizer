@@ -1,0 +1,8 @@
+.rs_label{
+    position: relative;
+    display: block;
+}
+
+.slidecontainer input{
+    width: 95%;
+}
