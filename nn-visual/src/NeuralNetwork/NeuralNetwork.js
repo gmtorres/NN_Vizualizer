@@ -264,6 +264,7 @@ export default class NeuralNetwork{
     }
 
     feedforwardStepLayer(input_data, output_data){
+        this.expression = []
         if(this.step_layer == null || this.action !== "feedforward"){
             this.action = "feedforward"
             this.step_layer = 1;
@@ -295,6 +296,7 @@ export default class NeuralNetwork{
     }
 
     train(input_data, output_data){
+        this.expression = []
         for(let t = 0; t < this.training_times; t++)
             for(let i = 0; i < input_data.length; i++)
                 this.backpropagation(input_data[i],output_data[i]);
@@ -333,6 +335,7 @@ export default class NeuralNetwork{
     }
 
     backpropagationLayer(input_data, output_data){
+        this.expression = []
         if(this.step_layer == null || this.action !== "backpropagation"){
             this.action = "backpropagation"
             this.feedforward(input_data,output_data);
@@ -410,7 +413,7 @@ export default class NeuralNetwork{
             node_expression += "("
             for(let a = 0; a < node.edges.length;a++){
                 d_sum += this.layers[this.step_layer][this.step_node].edges_old[a] * this.layers[this.step_layer+1][a].derivative;
-                node_expression += this.layers[this.step_layer][this.step_node].edges_old[a].toFixed(4) + "*" + this.layers[this.step_layer+1][a].derivative.toFixed(4)
+                node_expression += this.layers[this.step_layer+1][a].derivative.toFixed(4) + "*" + this.layers[this.step_layer][this.step_node].edges_old[a].toFixed(4)
                 if(a !== node.edges.length - 1) node_expression += "+"
             }
             node_expression += ")"

@@ -27,7 +27,7 @@ const InfoBasic = () => {
             <br/>
             <br/>
             In the Neural Network model we try to achieved nodes or a set of nodes that can recognize certain patterns in our data and activate uppon that.
-            This behaviour arise throught the complex interactions between the previous nodes by the edges connecting them.
+            This behaviour arise throught the complex <b>interactions</b> between the previous nodes by the edges connecting them.
             <br/>
             <br/>
             The process of transforming and processing the inputs into outputs is called <b>feedforward</b>, where we feed our neural network
