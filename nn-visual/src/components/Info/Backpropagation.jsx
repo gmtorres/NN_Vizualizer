@@ -14,7 +14,8 @@ const Backpropagation = () => {
     let error_node_expression_2 = String.raw`= 2 \times \frac 1 2 \times (out_n^{last} - actual_n)^{2-1} \times - 1`
     let error_node_expression_3 = String.raw`= actual_n-out_n^{last}`
 
-    let activation_deriv_expression_1 = String.raw`\frac{\partial out_n^{last}}{\partial in_n^{last}} = \frac{\partial activation(in_n^{last})}{\partial in_n^{last}} = activation'(in_n^{last})`
+    let activation_deriv_expression_1 = String.raw`\frac{\partial out_n^{last}}{\partial in_n^{last}} = \frac{\partial activation(in_n^{last})}{\partial in_n^{last}}`
+    let activation_deriv_expression_2 = String.raw`= activation'(in_n^{last})`
     
     let weight_in_expression_1 = String.raw`\frac{\partial in_n^{last}}{\partial w_{k,n}} = \frac{\partial \sum_{k=1} out_k^{last-1} \times w_{k,n}}{\partial w_{k,n}}`
     let weight_in_expression_2 = String.raw`= out_k^{last-1}`
@@ -31,8 +32,8 @@ const Backpropagation = () => {
  
     let error_hidden_node_expression_2 = String.raw`\frac{\partial E}{\partial out_n^l} = \sum_{k=1} { \left( \Delta node_k^{l+1} \times w_{n,k} \right) }`
 
-    let final_expression_1 = String.raw` \Delta node_n^{last} = (actual_n-out_n^{last}) \times activation'(node_n^{last})`
-    let final_expression_2 = String.raw` \Delta node_n^{l} = \sum_{k=1} { \left( \Delta node_k^{l+1} \times w_{n,k} \right) } \times activation'(node_n^l)`
+    let final_expression_1 = String.raw` \Delta node_n^{last} = (actual_n-out_n^{last}) \times activation'(out_n^{last})`
+    let final_expression_2 = String.raw` \Delta node_n^{l} = \sum_{k=1} { \left( \Delta node_k^{l+1} \times w_{n,k} \right) } \times activation'(out_n^l)`
     let final_expression_3 = String.raw` \Delta w_{n,k} = \Delta node_n^{l} \times out_n^{l-1}`
     let final_expression_4 = String.raw` w_{n,k}^{t+1} = w_{n,k}^{t} \times \alpha \space \Delta w_{n,k}`
 
@@ -103,7 +104,7 @@ const Backpropagation = () => {
                 <Expression expressions={[error_node_expression_1,error_node_expression_2,error_node_expression_3]} height={true}/>
                 The second part means how much the <b><i>out value</i></b> changes in terms of the <b><i>in value</i></b>. We know that the out value is calculated by
                 applying the <b>activation function</b>, so we can use the <b>derivative of the activation function</b>.
-                <Expression expressions={activation_deriv_expression_1} height={true}/>
+                <Expression expressions={[activation_deriv_expression_1,activation_deriv_expression_2]} height={true}/>
                 The third part is how much the <b><i>in value</i></b> changes in terms of the correspondent <b>weight</b>. We know how the in value is calculated,
                 the first part of the feedfoward, so we can calculate this gradient:
                 <Expression expressions={[weight_in_expression_1,weight_in_expression_2]} height={true}/>
