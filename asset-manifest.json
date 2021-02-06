@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/NN_Vizualizer/static/css/main.ae209aa3.chunk.css",
-    "main.js": "/NN_Vizualizer/static/js/main.d3ec1cf3.chunk.js",
-    "main.js.map": "/NN_Vizualizer/static/js/main.d3ec1cf3.chunk.js.map",
+    "main.css": "/NN_Vizualizer/static/css/main.db172813.chunk.css",
+    "main.js": "/NN_Vizualizer/static/js/main.7cf3cfbd.chunk.js",
+    "main.js.map": "/NN_Vizualizer/static/js/main.7cf3cfbd.chunk.js.map",
     "runtime-main.js": "/NN_Vizualizer/static/js/runtime-main.2776133c.js",
     "runtime-main.js.map": "/NN_Vizualizer/static/js/runtime-main.2776133c.js.map",
     "static/js/2.cc793890.chunk.js": "/NN_Vizualizer/static/js/2.cc793890.chunk.js",
@@ -10,13 +10,13 @@
     "static/js/3.293841c1.chunk.js": "/NN_Vizualizer/static/js/3.293841c1.chunk.js",
     "static/js/3.293841c1.chunk.js.map": "/NN_Vizualizer/static/js/3.293841c1.chunk.js.map",
     "index.html": "/NN_Vizualizer/index.html",
-    "static/css/main.ae209aa3.chunk.css.map": "/NN_Vizualizer/static/css/main.ae209aa3.chunk.css.map",
+    "static/css/main.db172813.chunk.css.map": "/NN_Vizualizer/static/css/main.db172813.chunk.css.map",
     "static/js/2.cc793890.chunk.js.LICENSE.txt": "/NN_Vizualizer/static/js/2.cc793890.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.2776133c.js",
     "static/js/2.cc793890.chunk.js",
-    "static/css/main.ae209aa3.chunk.css",
-    "static/js/main.d3ec1cf3.chunk.js"
+    "static/css/main.db172813.chunk.css",
+    "static/js/main.7cf3cfbd.chunk.js"
   ]
 }
